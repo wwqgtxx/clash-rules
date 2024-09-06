@@ -48,21 +48,21 @@ jobs:
           echo "payload:" > icloud.yaml
           curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> icloud.yaml
           ./mihomo convert-ruleset domain yaml icloud.yaml icloud.mrs
-          ./mihomo convert-ruleset domain mrs icloud.mrs icloud.text
+          ./mihomo convert-ruleset domain mrs icloud.mrs icloud.list
 
       - name: Generate google.txt file
         run: |
           echo "payload:" > google.yaml
           curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> google.yaml
           ./mihomo convert-ruleset domain yaml google.yaml google.mrs
-          ./mihomo convert-ruleset domain mrs google.mrs google.text
+          ./mihomo convert-ruleset domain mrs google.mrs google.list
 
       - name: Generate apple.txt file
         run: |
           echo "payload:" > apple.yaml
           curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> apple.yaml
           ./mihomo convert-ruleset domain yaml apple.yaml apple.mrs
-          ./mihomo convert-ruleset domain mrs apple.mrs apple.text
+          ./mihomo convert-ruleset domain mrs apple.mrs apple.list
 
       - name: Generate private.txt file
         run: |
@@ -70,7 +70,7 @@ jobs:
           curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> private.yaml
           ./mihomo convert-ruleset domain yaml private.yaml private.mrs
-          ./mihomo convert-ruleset domain mrs private.mrs private.text
+          ./mihomo convert-ruleset domain mrs private.mrs private.list
 
       - name: Generate direct.txt file
         run: |
@@ -78,7 +78,7 @@ jobs:
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> direct.yaml
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> direct.yaml
           ./mihomo convert-ruleset domain yaml direct.yaml direct.mrs
-          ./mihomo convert-ruleset domain mrs direct.mrs direct.text
+          ./mihomo convert-ruleset domain mrs direct.mrs direct.list
 
       - name: Generate proxy.txt file
         run: |
@@ -86,67 +86,68 @@ jobs:
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> proxy.yaml
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> proxy.yaml
           ./mihomo convert-ruleset domain yaml proxy.yaml proxy.mrs
-          ./mihomo convert-ruleset domain mrs proxy.mrs proxy.text
+          ./mihomo convert-ruleset domain mrs proxy.mrs proxy.list
 
       - name: Generate reject.txt file
         run: |
           echo "payload:" > reject.yaml
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> reject.yaml
           ./mihomo convert-ruleset domain yaml reject.yaml reject.mrs
-          ./mihomo convert-ruleset domain mrs reject.mrs reject.text
+          ./mihomo convert-ruleset domain mrs reject.mrs reject.list
 
       - name: Generate gfw.txt file
         run: |
           echo "payload:" > gfw.yaml
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> gfw.yaml
           ./mihomo convert-ruleset domain yaml gfw.yaml gfw.mrs
-          ./mihomo convert-ruleset domain mrs gfw.mrs gfw.text
+          ./mihomo convert-ruleset domain mrs gfw.mrs gfw.list
 
       - name: Generate greatfire.txt file
         run: |
           echo "payload:" > greatfire.yaml
           curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> greatfire.yaml
           ./mihomo convert-ruleset domain yaml greatfire.yaml greatfire.mrs
-          ./mihomo convert-ruleset domain mrs greatfire.mrs greatfire.text
+          ./mihomo convert-ruleset domain mrs greatfire.mrs greatfire.list
 
       - name: Generate tld-not-cn.txt file
         run: |
           echo "payload:" > tld-not-cn.yaml
           curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$1|\n"' | sed "s/|/'/g" >> tld-not-cn.yaml
           ./mihomo convert-ruleset domain yaml tld-not-cn.yaml tld-not-cn.mrs
-          ./mihomo convert-ruleset domain mrs tld-not-cn.mrs tld-not-cn.text
+          ./mihomo convert-ruleset domain mrs tld-not-cn.mrs tld-not-cn.list
 
       - name: Generate cncidr.txt file
         run: |
           echo "payload:" > cncidr.yaml
           curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> cncidr.yaml
           ./mihomo convert-ruleset ipcidr yaml cncidr.yaml cncidr.mrs
-          ./mihomo convert-ruleset ipcidr mrs cncidr.mrs cncidr.text
+          ./mihomo convert-ruleset ipcidr mrs cncidr.mrs cncidr.list
 
       - name: Generate telegramcidr.txt file
         run: |
           echo "payload:" > telegramcidr.yaml
           curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> telegramcidr.yaml
           ./mihomo convert-ruleset ipcidr yaml telegramcidr.yaml telegramcidr.mrs
-          ./mihomo convert-ruleset ipcidr mrs telegramcidr.mrs telegramcidr.text
+          ./mihomo convert-ruleset ipcidr mrs telegramcidr.mrs telegramcidr.list
 
       - name: Generate lancidr.txt file
         run: |
           echo "payload:" > lancidr.yaml
           curl -sSL ${lan_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> lancidr.yaml
           ./mihomo convert-ruleset ipcidr yaml lancidr.yaml lancidr.mrs
-          ./mihomo convert-ruleset ipcidr mrs lancidr.mrs lancidr.text
+          ./mihomo convert-ruleset ipcidr mrs lancidr.mrs lancidr.list
 
       - name: Generate applications.txt file
         run: |
           mv applications.txt applications.yaml
+          cat applications.yaml | grep -v 'payload:' | sed -e 's/^[ \t]*- //' >> applications.list
 
       - name: Move files to publish directory
         run: |
           mkdir -p publish
           cp *.yaml ./publish/
           cp *.mrs ./publish/
-          cp *.text ./publish/
+          cp *.list ./publish/
 
       - name: Release and upload assets
         uses: softprops/action-gh-release@v2
