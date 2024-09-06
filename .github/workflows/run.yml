@@ -34,6 +34,7 @@ jobs:
       - name: Checkout the "hidden" branch
         uses: actions/checkout@v4
         with:
+          repository: Loyalsoldier/clash-rules
           ref: hidden
 
       - name: Download and unzip `mihomo core`
@@ -136,10 +137,16 @@ jobs:
           ./mihomo convert-ruleset ipcidr yaml lancidr.yaml lancidr.mrs
           ./mihomo convert-ruleset ipcidr mrs lancidr.mrs lancidr.text
 
+      - name: Generate applications.txt file
+        run: |
+          mv applications.txt applications.yaml
+
       - name: Move files to publish directory
         run: |
           mkdir -p publish
-          cp *.txt ./publish/
+          cp *.yaml ./publish/
+          cp *.mrs ./publish/
+          cp *.text ./publish/
 
       - name: Release and upload assets
         uses: softprops/action-gh-release@v2
