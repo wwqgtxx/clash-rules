@@ -1,4 +1,4 @@
-name: Generate RULE-SET for Premium Edition of Clash
+name: Generate RULE-SET for Mihomo
 on:
   workflow_dispatch:
   schedule:
@@ -44,28 +44,28 @@ jobs:
 
       - name: Generate icloud.txt file
         run: |
-          echo "payload:" > icloud.txt
+          echo "payload:" > icloud.yaml
           curl -sSL ${custom_icloud} | grep -E "^(full|domain):" | awk -F ':' '{printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> icloud.yaml
           ./mihomo convert-ruleset domain yaml icloud.yaml icloud.mrs
           ./mihomo convert-ruleset domain mrs icloud.mrs icloud.text
 
       - name: Generate google.txt file
         run: |
-          echo "payload:" > google.txt
+          echo "payload:" > google.yaml
           curl -sSL ${felixonmars_google} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> google.yaml
           ./mihomo convert-ruleset domain yaml google.yaml google.mrs
           ./mihomo convert-ruleset domain mrs google.mrs google.text
 
       - name: Generate apple.txt file
         run: |
-          echo "payload:" > apple.txt
+          echo "payload:" > apple.yaml
           curl -sSL ${felixonmars_apple} | perl -ne '/^server=\/([^\/]+)\// && print "  - |+.$1|\n"' | sed "s/|/'/g" >> apple.yaml
           ./mihomo convert-ruleset domain yaml apple.yaml apple.mrs
           ./mihomo convert-ruleset domain mrs apple.mrs apple.text
 
       - name: Generate private.txt file
         run: |
-          echo "payload:" > private.txt
+          echo "payload:" > private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^full:/ {printf "  - |%s|\n", $2}' | sed "s/|/'/g" >> private.yaml
           curl -sSL ${custom_private} | awk -F ':' '/^domain:/ {printf "  - |+.%s|\n", $2}' | sed "s/|/'/g" >> private.yaml
           ./mihomo convert-ruleset domain yaml private.yaml private.mrs
@@ -73,7 +73,7 @@ jobs:
 
       - name: Generate direct.txt file
         run: |
-          echo "payload:" > direct.txt
+          echo "payload:" > direct.yaml
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> direct.yaml
           curl -sSL ${Loyalsoldier_direct} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> direct.yaml
           ./mihomo convert-ruleset domain yaml direct.yaml direct.mrs
@@ -81,7 +81,7 @@ jobs:
 
       - name: Generate proxy.txt file
         run: |
-          echo "payload:" > proxy.txt
+          echo "payload:" > proxy.yaml
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(full:)([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |$2|\n"' | sed "s/|/'/g" >> proxy.yaml
           curl -sSL ${Loyalsoldier_proxy} | grep -Ev "^(regexp|keyword|full):" | perl -ne '/^(domain:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> proxy.yaml
           ./mihomo convert-ruleset domain yaml proxy.yaml proxy.mrs
@@ -89,49 +89,49 @@ jobs:
 
       - name: Generate reject.txt file
         run: |
-          echo "payload:" > reject.txt
+          echo "payload:" > reject.yaml
           curl -sSL ${Loyalsoldier_reject} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> reject.yaml
           ./mihomo convert-ruleset domain yaml reject.yaml reject.mrs
           ./mihomo convert-ruleset domain mrs reject.mrs reject.text
 
       - name: Generate gfw.txt file
         run: |
-          echo "payload:" > gfw.txt
+          echo "payload:" > gfw.yaml
           curl -sSL ${Loyalsoldier_gfw} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> gfw.yaml
           ./mihomo convert-ruleset domain yaml gfw.yaml gfw.mrs
           ./mihomo convert-ruleset domain mrs gfw.mrs gfw.text
 
       - name: Generate greatfire.txt file
         run: |
-          echo "payload:" > greatfire.txt
+          echo "payload:" > greatfire.yaml
           curl -sSL ${Loyalsoldier_greatfire} | grep -Ev "^(regexp|keyword):" | perl -ne '/^(domain:|full:)?([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$2|\n"' | sed "s/|/'/g" >> greatfire.yaml
           ./mihomo convert-ruleset domain yaml greatfire.yaml greatfire.mrs
           ./mihomo convert-ruleset domain mrs greatfire.mrs greatfire.text
 
       - name: Generate tld-not-cn.txt file
         run: |
-          echo "payload:" > tld-not-cn.txt
+          echo "payload:" > tld-not-cn.yaml
           curl -sSL "${custom_tld_not_cn}" | perl -ne '/^domain:([-_a-zA-Z0-9]+(\.[-_a-zA-Z0-9]+)*)/ && print "  - |+.$1|\n"' | sed "s/|/'/g" >> tld-not-cn.yaml
           ./mihomo convert-ruleset domain yaml tld-not-cn.yaml tld-not-cn.mrs
           ./mihomo convert-ruleset domain mrs tld-not-cn.mrs tld-not-cn.text
 
       - name: Generate cncidr.txt file
         run: |
-          echo "payload:" > cncidr.txt
+          echo "payload:" > cncidr.yaml
           curl -sSL ${cn_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> cncidr.yaml
           ./mihomo convert-ruleset ipcidr yaml cncidr.yaml cncidr.mrs
           ./mihomo convert-ruleset ipcidr mrs cncidr.mrs cncidr.text
 
       - name: Generate telegramcidr.txt file
         run: |
-          echo "payload:" > telegramcidr.txt
+          echo "payload:" > telegramcidr.yaml
           curl -sSL ${telegram_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> telegramcidr.yaml
           ./mihomo convert-ruleset ipcidr yaml telegramcidr.yaml telegramcidr.mrs
           ./mihomo convert-ruleset ipcidr mrs telegramcidr.mrs telegramcidr.text
 
       - name: Generate lancidr.txt file
         run: |
-          echo "payload:" > lancidr.txt
+          echo "payload:" > lancidr.yaml
           curl -sSL ${lan_cidr} | perl -ne '/(.+\/\d+)/ && print "  - |$1|\n"' | sed "s/|/'/g" >> lancidr.yaml
           ./mihomo convert-ruleset ipcidr yaml lancidr.yaml lancidr.mrs
           ./mihomo convert-ruleset ipcidr mrs lancidr.mrs lancidr.text
