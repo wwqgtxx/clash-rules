@@ -106,10 +106,10 @@ rule-providers:
 
   applications:
     type: http
-    format: yaml
+    format: text
     behavior: classical
-    url: "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/applications.yaml"
-    path: ./ruleset/applications.yaml
+    url: "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/applications.list"
+    path: ./ruleset/applications.list
     interval: 86400
 ```
 
