@@ -8,6 +8,14 @@
 
 ```yaml
 rule-providers:
+  fakeip-filter:
+    type: http
+    format: mrs
+    behavior: domain
+    url: "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.mrs"
+    path: ./ruleset/fakeip-filter.mrs
+    interval: 86400
+
   reject:
     type: http
     format: mrs
