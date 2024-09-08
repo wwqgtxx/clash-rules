@@ -26,6 +26,7 @@ jobs:
           echo "Loyalsoldier_greatfire=https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/greatfire.txt" >> $GITHUB_ENV
           echo "felixonmars_apple=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/apple.china.conf" >> $GITHUB_ENV
           echo "felixonmars_google=https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/google.china.conf" >> $GITHUB_ENV
+          echo "fakeip_filter=https://raw.githubusercontent.com/juewuy/ShellCrash/dev/public/fake_ip_filter.list" >> $GITHUB_ENV
           echo "cn_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/cn.txt" >> $GITHUB_ENV
           echo "lan_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/private.txt" >> $GITHUB_ENV
           echo "telegram_cidr=https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/telegram.txt" >> $GITHUB_ENV
@@ -141,6 +142,11 @@ jobs:
         run: |
           mv applications.txt applications.yaml
           cat applications.yaml | grep -v 'payload:' | sed -e 's/^[ \t]*- //' >> applications.list
+
+      - name: Generate fakeip_filter.txt file
+        run: |
+          curl -sSL "${fakeip_filter}" >> fake_ip_filter.list
+          ./mihomo convert-ruleset domain text fake_ip_filter.list fake_ip_filter.mrs
 
       - name: Move files to publish directory
         run: |
