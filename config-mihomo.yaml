@@ -1,0 +1,127 @@
+proxy-providers:
+  CNIX:
+    type: http
+    url: "这里需要替换为你的订阅链接，请保留双引号和双引号前面的空格"
+    path: ./cnix.yaml
+    interval: 28800
+    override:
+      additional-prefix: "CNIX || "
+
+proxy-groups:
+  - name: PROXY
+    type: select
+    include-all-proxies: true
+    use:
+      - CNIX
+  - name: AI
+    type: select
+    include-all-proxies: true
+    use:
+      - CNIX
+  - name: MyReject
+    type: select
+    proxies:
+      - REJECT
+      - PROXY
+      - DIRECT
+
+mode: rule
+log-level: info
+mixed-port: 7890
+ipv6: false
+allow-lan: true
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: always
+keep-alive-interval: 15
+keep-alive-idle: 15
+external-controller: 127.0.0.1:9090
+profile:
+  store-selected: true
+  store-fake-ip: true
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 12
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-without-asn.mmdb"
+  asn: "https://fastly.jsdelivr.net/gh/Loyalsoldier/geoip@release/GeoLite2-ASN.mmdb"
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+tun:
+  enable: true
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+  stack: gvisor
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+    - 114.114.114.114
+    - 119.29.29.29
+    - 180.76.76.76
+    - 223.5.5.5
+    - 223.6.6.6
+    - 1.1.1.1
+    - 8.8.8.8
+
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:53
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.localdomain"
+    - "*.example"
+    - "*.invalid"
+    - "*.localhost"
+    - "*.test"
+    - "*.local"
+    - "*.home.arpa"
+    - localhost.sec.qq.com
+    - localhost.ptlogin2.qq.com
+    - "+.msftconnecttest.com"
+
+rule-providers:
+  applications:
+    type: http
+    behavior: classical
+    url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    path: ./ruleset/applications.yaml
+    interval: 21600
+
+rules:
+  - RULE-SET,applications,DIRECT
+  - GEOSITE,private,DIRECT
+  - GEOSITE,category-ads-all,MyReject
+  - GEOSITE,category-ai-cn,DIRECT
+  - GEOSITE,category-ai-!cn,AI
+  - GEOSITE,icloud,DIRECT
+  - GEOSITE,apple,PROXY
+  - GEOSITE,google,PROXY
+  - GEOSITE,geolocation-!cn,PROXY
+  - GEOSITE,cn,DIRECT
+  - GEOIP,private,DIRECT
+  - GEOIP,cn,DIRECT
+  - MATCH,PROXY
